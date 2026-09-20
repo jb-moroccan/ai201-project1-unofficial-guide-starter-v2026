@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+Jenna Bousellam, corpora: campus_life
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -29,8 +29,8 @@
 
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+**Chunk size: 150**
+**Overlap: 0**
 
 <!-- What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
@@ -42,40 +42,51 @@
 
      Milestone 3. -->
 
+I chose a chunk size of 150 because I wanted a sentence based approach for my chunks as I noticed in the corpora, separate thoughts tended to be in their own senetence. I asked Claude if it had an idea for a specific number and it suggested 150 because it keeps most single sentences intact (your chunks range from ~50 to ~120 chars), it allows slightly longer thoughts to stay together if needed, and it maintains readability without becoming too large. I liked the chunks that it produced with 150 chars originally but wanted to check if a lower number like 80 or even 100 would give me similar results. When I did that, I got answers like: That's real time, not optimistic time. This is not a thought that can tell me anything independently, so I went back up to the original 150 characters. I used 0 overlap because of the same thought that each idea was in its own sentence, so I wouldn't actually want any overlap in thought from one sentence to another. 
+
 ## Sample Chunks
 
 <!-- Five chunks, pasted as text. Label each one and name the file it came from
      AND the function that produced it — the grader checks your code against
      what you claim here.
 
-     `python app.py chunks -n 5` prints all three for you. Copy them straight
+     `python app.py chunks -n 5` prints all five for you. Copy them straight
      across.
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** — source: `admin_add_drop_deadline.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+On the add/drop deadline
+
+You can add a course through the end of the second week.
 ```
 
-**Chunk 2** — source: `` — produced by: ``
+**Chunk 2** — source: `course_cs_210.txt#2` — produced by: `chunker.py::split_documents`
 
 ```
+Expect 8 to 10 hours a week outside class. The one piece of advice: do the labs even though they're only 10% — the exams reuse the lab problems.
 ```
 
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 3** — source: `course_phys_130_workload.txt#1` — produced by: `chunker.py::split_documents`
 
 ```
+It's front-loaded — the first month is heavier than the rest, partly because you're learning the format.
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+**Chunk 4** — source: `dining_verrill_street_grill.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+Verrill Street Grill
+
+I'm a junior and I've done this twice now. Wait times: up to 30 minutes on Friday evenings, otherwise under 10.
 ```
 
-**Chunk 5** — source: `` — produced by: ``
+**Chunk 5** — source: `housing_morrow_house.txt#1` — produced by: `chunker.py::split_documents`
 
 ```
+Rooms are singles and doubles, hall bathrooms. The good: cheapest housing tier by about $900 a year, and the singles are real singles.
 ```
 
 ## Sample Answer
