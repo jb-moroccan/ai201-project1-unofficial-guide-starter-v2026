@@ -57,7 +57,7 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
-I have my cutoff originally set to 0.6 with the starter code so this cutoff would allow for some leaks to go through with made up answers but it isn't so low that it won't answer any questions. It provides honest feedback that it doesn't have enough information to answer a question vs. confidently answering wrong. 
+My cutoff originally was set to the default of 0.6 with the starter code so this cutoff would allow for some leaks to go through with made up answers but it isn't so low that it won't answer any questions. I updated the cutoff to be 0.45 instead so it provides honest feedback that it doesn't have enough information to answer a question vs. confidently answering wrong. 
 
 ---
 
@@ -75,7 +75,7 @@ I have my cutoff originally set to 0.6 with the starter code so this cutoff woul
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-No chunk should contain more than 1 complete thought at a time.
+No chunk should contain more than 1 complete thought at a time, meaning 2 separate questions' answers should not be present in 1 single chunk.
 
 **Why this target:**
 
