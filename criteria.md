@@ -26,6 +26,8 @@ contains the answer.
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
 
+One of my questions is about a topic, time and distance between buildings, that only 2 of the documents mention, so I expect that one to be hard.
+
 ---
 
 ## 2. Every answer names a source
@@ -35,6 +37,8 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
+
+My setup makes this achievable because all my questions relate back to campus activities that could be answered by at least 1 source document. In order for this not to work, it would have to misinterpret dorm as not housing or not be able to link multiple sources together to create an answer.
 
 ---
 
@@ -53,6 +57,8 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
+I have my cutoff originally set to 0.6 with the starter code so this cutoff would allow for some leaks to go through with made up answers but it isn't so low that it won't answer any questions. It provides honest feedback that it doesn't have enough information to answer a question vs. confidently answering wrong. 
+
 ---
 
 ## 4. Something about your chunks
@@ -69,11 +75,11 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-
+No chunk should contain more than 1 complete thought at a time.
 
 **Why this target:**
 
-
+Having too much information in the same chunk doesn't help to gather the specificity of the questions I asked. Each thought or idea should be separated into its own chunk so that the distance is lower for each chunk.
 
 ---
 
@@ -87,11 +93,11 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
-
+Each answer provided links back to a minimum of 1 source document.
 
 **Why this target:**
 
-
+Any question asked should be able to be answered by the corpora provided and if it can't be, the cutoff should handle it appropriately and refuse to answer the question. If it doesn't link the answer back to some source document, the system is likely hallucinating and providing confident wrong answers which I don't want.
 
 ---
 
