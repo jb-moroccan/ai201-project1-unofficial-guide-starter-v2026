@@ -27,6 +27,8 @@ Jenna Bousellam, corpora: campus_life
 
      Milestone 5. -->
 
+I picked the campus_life corpus because I liked that it has several source doucments and I wanted to build questions that required combining multiple sources to produce the correct answer. The kinds of questions my system should answer are related to quietness in dorms, wait times in dining halls, classes with the most work, and classes with the most exams. These are questions that the typical college pamphlets won't provide but are the things you actually care about as a college student. 
+
 ## Chunking Strategy
 
 **Chunk size: 150**
@@ -94,16 +96,21 @@ Rooms are singles and doubles, hall bathrooms. The good: cheapest housing tier b
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question: Which classes have the most amount of outside class work each week?**
 
 **Answer:**
 
 ```
+Based on the documents, BIOL 160 has the most outside class work, requiring 9 to 11 hours a week. This comes from the document `course_biol_160.txt`.
+
+Sources retrieved: advising_registration.txt, course_biol_160.txt, course_cs_210.txt, course_cs_210_workload.txt, course_econ_101.txt, course_econ_101_workload.txt, course_stat_150.txt, course_stat_150_workload.txt, money_jobs.txt
+
+1 model calls this session, 490 tokens (444 in, 46 out)
 ```
 
 **My relevance cutoff: 0.45**
 
-
+I used 0.45 as the cutoff because any question from outside the corpus has a distance value of 0.765 or higher while anything within the corpus has a distance value of 0.425 or lower. The 0.45 value keeps all questions that have answers in the corpus within range while keeping a wide enough gap between non-relevant questions that should always return no answers.
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -140,7 +147,11 @@ Rooms are singles and doubles, hall bathrooms. The good: cheapest housing tier b
 
 **1.**
 
+I asked Claude to write the chunking function for me based on the idea that I wanted chunks split by sentence with an overlap of 0 since I believe each thought in the sources really ended at each sentence so each chunk shouldn't lead into another thought. Claude provided the overall structure, splitting it where a period is. What I changed is that I needed a specific number for the chunk size and Claude didn't provide that initially so I added that in.
+
 **2.**
+
+I asked Claude to help with me determining an appropriate chunk size since I knew I wanted it split by sentence but wasn't sure the character count that would be best. It initially suggested 150 characters because it kept most single sentences intact and maintained that readability I was looking for when splitting my chunks by sentence. I validated Claude's suggestion by trying character values that were lower like 80 and 100 to see if those would be sufficient, and they had incomplete thoughts in each chunk, so I ended up sticking with the 150 character limit.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
