@@ -101,7 +101,9 @@ Rooms are singles and doubles, hall bathrooms. The good: cheapest housing tier b
 ```
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff: 0.45**
+
+
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -114,7 +116,16 @@ Rooms are singles and doubles, hall bathrooms. The good: cheapest housing tier b
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| What campus dorms have the best study environment if I need no noise? | In corpus | 0.425 |
+| Which dining halls have wait times that never exceed 20 minutes? | In corpus | 0.421 |
+| Which classes have the most amount of outside class work each week? | In corpus | 0.356 |
+| What's the best dorm to stay in if I want to be near a dining hall? | In corpus | 0.353 |
+| Which course has the most exams during a semester? | In corpus | 0.421 |
+| What is the capital of Mongolia? | Not in corpus | 0.790 |
+| How do I change the oil in a diesel engine? | Not in corpus | 0.848 |
+| Who won the 1994 World Cup? | Not in corpus | 0.765 |
+| What is the recommended dosage of ibuprofen for a headache? | Not in corpus | 0.791 |
+| How do I write a for loop in Rust? | Not in corpus | 0.831 |
 
 ## How I Used AI
 
