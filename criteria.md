@@ -75,7 +75,7 @@ My cutoff originally was set to the default of 0.6 with the starter code so this
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-No chunk should contain more than 1 complete thought at a time, meaning 2 separate questions' answers should not be present in 1 single chunk.
+2 separate questions' answers should not be present in 1 single chunk.
 
 **Why this target:**
 
