@@ -180,15 +180,62 @@ I asked Claude to help with me determining an appropriate chunk size since I kne
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | /5 | /5 | /5 | MET or MISSED |
+| 2. Every answer names a source | 5 of 5 | /5 | /5 | /5 | MET or MISSED |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. 2 separate questions' answers should not be present in 1 single chunk | 5 of 5 | /5 | /5 | /5 | MET or MISSED |
+| 5. Each answer provided links back to a minimum of 1 source document | 5 of 5 | /5 | /5 | /5 | MET or MISSED |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
+run_eval.py is the function that produced all these responses
+
+### What campus dorms are built for quiet studying? — run 2
+
+- Best distance: 0.4120 (passed the gate)
+- Sources retrieved: dining_the_ridgeway_cafe.txt, housing_aldridge_hall_noise.txt, housing_calder_annexe_noise.txt, housing_fenwick_court.txt, housing_fenwick_court_noise.txt, housing_innisfree_hall.txt, housing_old_brewhouse.txt, housing_tamsin_court.txt, study_library_hours.txt
+
+```
+Based on the provided documents, there is no mention of any dorms being built specifically for quiet studying. However, documents `housing_aldridge_hall_noise.txt`, `housing_fenwick_court_noise.txt`, and `housing_calder_annexe_noise.txt` note that people living in those buildings end up going to the library to work because it is open until 2am during term.
+```
+
+### Which dining halls have wait times that never exceed 20 minutes? — run 2
+
+- Best distance: 0.4214 (passed the gate)
+- Sources retrieved: dining_halden_hall.txt, dining_halden_hall_followup.txt, dining_kestrel_commons_followup.txt, dining_north_kitchen_followup.txt, dining_pellew_dining_hall.txt, dining_pellew_dining_hall_followup.txt, dining_the_atrium_followup.txt, dining_the_ridgeway_cafe_followup.txt, dining_verrill_street_grill.txt, dining_verrill_street_grill_followup.txt
+
+```
+Based on the provided documents, Halden Hall rarely has wait times of more than 8 minutes, even at noon (dining_halden_hall.txt). Verrill Street Grill has wait times under 10 minutes, except on Friday evenings when they go up to 30 minutes (dining_verrill_street_grill.txt).
+```
+
+### Which classes have the most amount of outside class work each week? — run 2
+
+- Best distance: 0.3563 (passed the gate)
+- Sources retrieved: advising_registration.txt, course_biol_160.txt, course_cs_210.txt, course_cs_210_workload.txt, course_econ_101.txt, course_econ_101_workload.txt, course_stat_150.txt, course_stat_150_workload.txt, money_jobs.txt
+
+```
+BIOL 160 has the most outside class work, requiring 9 to 11 hours a week (course_biol_160.txt).
+```
+
+### What's the best dorm to stay in if I want to be near a dining hall? — run 2
+
+- Best distance: 0.3528 (passed the gate)
+- Sources retrieved: dining_halden_hall.txt, dining_pellew_dining_hall.txt, dining_verrill_street_grill.txt, housing_aldridge_hall.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, housing_tamsin_court.txt
+
+```
+I don't have enough information to answer your question from the provided documents.
+```
+
+### Which course has the most exams during a semester? — run 2
+
+- Best distance: 0.4211 (passed the gate)
+- Sources retrieved: admin_graduation_requirements.txt, advising_registration.txt, course_biol_160.txt, course_biol_160_workload.txt, course_cs_210_exams.txt, course_math_220.txt, course_math_220_exams.txt, course_phys_130.txt, money_textbooks.txt
+
+```
+I do not have enough information to answer which course has the most exams during a semester.
+```
 
 ## Verdicts
 
