@@ -180,17 +180,17 @@ I asked Claude to help with me determining an appropriate chunk size since I kne
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 | /5 | /5 | /5 | MET or MISSED |
-| 2. Every answer names a source | 5 of 5 | /5 | /5 | /5 | MET or MISSED |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 2/5 | 2/5 | 2/5 | MISSED |
+| 2. Every answer names a source | 5 of 5 | 3/5 | 3/5 | 3/5 | MISSED |
 | 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
-| 4. 2 separate questions' answers should not be present in 1 single chunk | 5 of 5 | /5 | /5 | /5 | MET or MISSED |
-| 5. Each answer provided links back to a minimum of 1 source document | 5 of 5 | /5 | /5 | /5 | MET or MISSED |
+| 4. 2 separate questions' answers should not be present in 1 single chunk | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Each answer provided links back to a minimum of 1 source document | 5 of 5 | 3/5 | 3/5 | 3/5 | MISSED |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
 
-run_eval.py is the function that produced all these responses
+Produced by `run_eval.py::main` (answers generated via `generate.py::answer_from_chunks`)
 
 ### What campus dorms are built for quiet studying? — run 2
 
@@ -250,11 +250,11 @@ I do not have enough information to answer which course has the most exams durin
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunk contains the answer | MISSED | Only 2 of 5 questions (dining wait times, class workload) had the answer in the retrieved chunks — the other 3 either retrieved chunks describing the wrong thing (noise problems, not quiet recommendations) or didn't cover the question at all (dorm-to-dining proximity, exam counts). |
+| 2 | Every answer names a source | MISSED | 3 of 5 questions produced answers naming a source file; the 2 questions where the system refused ("I don't have enough information...") named no source, since a refusal has nothing to cite. |
+| 3 | Gate stops out-of-corpus questions | MET | All 5 out-of-corpus questions had a best distance well above the 0.45 cutoff (0.765–0.848), so the gate refused all 5 as designed. |
+| 4 | 2 separate questions' answers should not be present in 1 single chunk | MET | Sampling chunks with `python app.py chunks` showed each chunk holds one sentence-level thought at most, since the chunker splits on sentence boundaries with a 150-character cap and no overlap. |
+| 5 | Each answer provided links back to a minimum of 1 source document | MISSED | In the responses for 2 questions, it stated it didn't have enough information to provide an answer and the answer didn't contain a link to one of the txt files from the corpora. |
 
 ## Diagnoses
 
@@ -275,6 +275,18 @@ I do not have enough information to answer which course has the most exams durin
      low, and which one you'd tighten and to what.
 
      Milestone 3. -->
+
+**Criterion 1 — Retrieved chunk contains the answer.** Two different mechanisms, both pre-generation:
+
+- *"What's the best dorm to stay in if I want to be near a dining hall?"* — the answer exists scattered across three facts: `transit_walking.txt` states "Morrow House to Kestrel Commons: 7 minutes," and housing/dining docs name other dorms and halls separately. The model needs to combine multiple facts (one dorm-to-dining distance, plus context from other dorms/halls) into a comparison. This is a **generation** problem: retrieval surfaced both housing and dining chunks in the same top-10 list, but the model's original grounding instruction refused to synthesize across multiple chunks.
+- *"Which course has the most exams during a semester?"* — retrieved chunks each name one course's exam count (`course_cs_210_exams.txt`, `course_math_220_exams.txt`), but the comparison across courses never appears in any single chunk. This is a **chunking** problem: because I split by sentence, a comparative fact that spans multiple documents can never land inside one chunk.
+- *"What campus dorms are built for quiet studying?"* — the answer chunk exists (`housing_tamsin_court_noise.txt`: "Quiet, structurally — concrete floors between units") but never appeared in the top 10 retrieved results; chunks about other dorms' noise *problems* ranked higher instead. This is a **retrieval/embedding** problem: the question's embedding matched noise-complaint language more closely than the one chunk that actually answers it.
+
+**Criterion 2 — Every answer names a source.** The dorm-near-dining and most-exams questions both returned "I don't have enough information..." in all 3 runs. I checked the retrieved chunks for both (`app.py ask --show-prompt`) and confirmed the answer wasn't in any of them, so the refusal is the model correctly following its grounding instruction, not a generation bug. Since a refusal cites nothing, this criterion fails as a direct downstream effect of criterion 1's chunking/retrieval gap on these two questions.
+
+**Criterion 5 — Every answer links back to ≥1 source document.** Same two questions and same root cause as criterion 2, but the failure mode here is specifically the missing citation rather than the missing answer: even if the model had hedged with a partial answer, it would still have nothing in the retrieved chunks to point to as a source, since neither question's answer exists in the corpus in a citable form.
+
+**Pattern:** two of my three misses (dorm-near-dining, most-exams) are the same underlying problem — comparative or relational questions whose answer spans multiple documents can't be satisfied by sentence-level chunks, so retrieval never has a single chunk to hand the model. That's one problem surfacing across criteria 1, 2, and 5, not three unrelated ones. The quiet-dorms miss is a separate, narrower issue: a ranking/embedding problem where the right chunk exists but loses to more numerous wrong-but-similar chunks.
 
 ## The Improvement
 
