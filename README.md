@@ -153,6 +153,10 @@ I asked Claude to write the chunking function for me based on the idea that I wa
 
 I asked Claude to help with me determining an appropriate chunk size since I knew I wanted it split by sentence but wasn't sure the character count that would be best. It initially suggested 150 characters because it kept most single sentences intact and maintained that readability I was looking for when splitting my chunks by sentence. I validated Claude's suggestion by trying character values that were lower like 80 and 100 to see if those would be sufficient, and they had incomplete thoughts in each chunk, so I ended up sticking with the 150 character limit.
 
+**3.**
+
+After my first round of testing showed that 2 of my 5 criteria were missed, I asked Claude to help identify patterns in those failures. Instead of treating each failure separately, Claude walked me through analyzing all the missed questions to find a common root cause: two questions ("which course has the most exams" and "best dorm near dining") were failing the same way — they both required comparing or combining facts from multiple chunks, but no single chunk contained the complete answer. This pattern analysis pointed me toward a specific fix (loosening the generation prompt to allow synthesis) rather than chasing three separate problems. The fix didn't end up working, but the pattern identification was crucial for understanding what to even try.
+
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
@@ -290,12 +294,9 @@ I do not have enough information to answer which course has the most exams durin
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** Updated the `GROUNDING_INSTRUCTION` in `generate.py` to explicitly permit the model to compare or combine facts stated across multiple documents. The new rule says: "You may compare or combine facts stated in multiple documents (e.g., if one says 'A has 5' and another says 'B has 3', you can say 'A is larger'). Do not guess or infer facts not explicitly stated in the documents."
 
-**Why I picked it:**
-
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+**Why I picked it:** The diagnosis directly identified this as the problem — two of the three misses fail because their answers require synthesizing facts from multiple chunks, and retrieval already surfaces both chunks together, but the model refuses to combine them. This is a one-line-of-reasoning change in the grounding prompt, isolated to generation, targeting the exact mechanism the diagnosis named.
 
 ### Run Log — After
 
@@ -304,11 +305,11 @@ I do not have enough information to answer which course has the most exams durin
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 2/5 | 2/5 | 2/5 | MISSED |
+| 2. Every answer names a source | 5 of 5 | 3/5 | 3/5 | 3/5 | MISSED |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. 2 separate questions' answers should not be present in 1 single chunk | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Each answer provided links back to a minimum of 1 source document | 5 of 5 | 3/5 | 3/5 | 3/5 | MISSED |
 
 **Did it help?**
 
@@ -318,6 +319,8 @@ I do not have enough information to answer which course has the most exams durin
      tell.
 
      Milestone 4. -->
+
+ No. The before and after runs produced identical results across all five criteria: 2/5 for criterion 1, 3/5 for criteria 2 and 5, and the same two questions ("most exams" and "dorm near dining") still refused to answer. The prompt change from "If the documents don't cover the question..." to "You may compare or combine facts stated in multiple documents..." made no difference. The model continued refusing even with explicit permission to synthesize across chunks.
 
 ## What's Still Broken
 
@@ -329,9 +332,22 @@ I do not have enough information to answer which course has the most exams durin
 
      Milestone 5. -->
 
+**Criterion 1 — Retrieved chunk contains the answer (target 4 of 5, actual 2 of 5):**
+
+- *"Which course has the most exams during a semester?"* — The model still refuses even though it retrieves `course_cs_210_exams.txt`, `course_math_220_exams.txt`, and others. The retrieved chunks each state one course's exam count, but the model won't compare them to find the maximum. What I'd do: Try a more explicit prompt rewrite: instead of "you may compare," write "List the exam counts from the documents and identify which course has the most." The current phrasing didn't work because the model may be interpreting comparison as inference rather than synthesis. Alternatively, use hybrid BM25 search to surface comparative language if it exists somewhere in the corpus.
+
+- *"What's the best dorm to stay in if I want to be near a dining hall?"* — The model still refuses, even though the answer exists as one stated fact in `transit_walking.txt`: "Morrow House to Kestrel Commons: 7 minutes." The chunk may not be reaching the model because the question's embedding doesn't match "walking times" language well. What I'd do: Switch to BM25 hybrid search to boost on keyword overlap with "dorm," "dining," "near," "close," "distance," or "minutes" — exact keyword match would surface the transit chunk.
+
+**Criteria 2 and 5 — Every answer names a source / links to ≥1 source (target 5 of 5, actual 3 of 5):**
+Both fail on the same two questions (most exams, dorm near dining). The refusals produce no answer and thus no citation. These two criteria will improve once criterion 1 is fixed — they're not independent problems.
+
+Why I stopped: The plan called for one targeted change. The prompt-only approach didn't work. The next steps (hybrid search, re-embedding, or aggressive prompt rewrites) would require multiple changes and multiple measurement cycles, which exceeds the scope of "one change, measured once" that the diagnosis and plan were built on.
+
 ## What I'd Do Differently
 
 <!-- Knowing what you know now — which of your five criteria would you write
      differently, and why?
 
      Milestone 5. -->
+
+I'd rewrite **Criterion 1** to be clearer about multi-chunk answers. "Retrieved chunks include one that contains the answer" is ambiguous — does it mean one chunk with the full answer, or multiple chunks that together answer it? Better: "For each question, the top-k results contain all the facts needed to answer, with each fact explicitly stated (though facts may span chunks)." This would have surfaced the comparative-questions issue earlier and pointed directly at retrieval/synthesis fixes from the diagnosis.
